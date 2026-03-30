@@ -161,14 +161,27 @@
     return lines.join('\n');
   }
 
-  const SCRIPT_URL = "https://script.google.com/a/macros/flighthub.com/s/AKfycbwRTwIpVEtxs2Hmmv4LcfHQ-x1y3xN6sRN16lEBRlYDScCD3Qv9XyeiwjOslGnqqWu7Jg/exec";
+  const SUPABASE_URL = "https://lxhtrkmhdupchlibyxup.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx4aHRya21oZHVwY2hsaWJ5eHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4OTcyOTIsImV4cCI6MjA5MDQ3MzI5Mn0.LPhbUAwGG1hWv4NEuKPIn7w-SggUxjTAVcI84qtCR1E";
 
   function logToSheet(data) {
-    fetch(SCRIPT_URL, {
+    fetch(`${SUPABASE_URL}/rest/v1/submissions`, {
       method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data)
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        servicedesk_id: data.servicedeskId,
+        call_transferred: data.callTransferred,
+        problem: data.problem,
+        service_type: data.serviceType,
+        issue: data.issue,
+        steps: data.steps
+      })
     }).catch(err => console.error("Logging failed:", err));
   }
 
