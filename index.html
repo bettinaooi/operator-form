@@ -161,10 +161,24 @@
     return lines.join('\n');
   }
 
+  const SCRIPT_URL = "https://script.google.com/a/macros/flighthub.com/s/AKfycbwRTwIpVEtxs2Hmmv4LcfHQ-x1y3xN6sRN16lEBRlYDScCD3Qv9XyeiwjOslGnqqWu7Jg/exec";
+
+  function logToSheet(data) {
+    fetch(SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).catch(err => console.error("Logging failed:", err));
+  }
+
   function copyToClipboard() {
     const sdId = document.getElementById('sd-id').value.trim();
+    const callTransferred = document.getElementById('call-transferred').value;
     const problem = document.getElementById('problem').value;
     const serviceType = document.getElementById('service-type').value;
+    const issue = document.getElementById('issue').value.trim();
+    const steps = document.getElementById('steps').value.trim();
 
     if (!sdId || !problem || !serviceType) {
       alert('Please fill in the required fields: Servicedesk ID, Problem/Concern, and Service Request Type.');
@@ -172,6 +186,8 @@
     }
 
     const text = buildSlackText();
+
+    logToSheet({ servicedeskId: sdId, callTransferred, problem, serviceType, issue, steps });
 
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById('copy-btn');
